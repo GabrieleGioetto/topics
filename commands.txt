@@ -1,6 +1,16 @@
 python teacher/bert_reconstruction.py --input_dir ./data/imdb/processed-dev --output_dir ./data/imdb/processed-dev/logits --do_train --evaluate_during_training --logging_steps 200 --save_steps 1000 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 20  --gradient_accumulation_steps 8 
 
+#pycharm
+python teacher/bert_reconstruction.py --input_dir ../data/imdb/processed-dev --output_dir ../data/imdb/processed-dev/logits --do_train --evaluate_during_training --logging_steps 200 --save_steps 1000 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 20  --gradient_accumulation_steps 8 
 
 
 
-python teacher/bert_reconstruction.py --output-dir ./data/imdb/processed-dev/logits --seed 42 --num-workers 6 --get-reps --checkpoint-folder-pattern "checkpoint-9000" --save-doc-logits --no-dev
+python teacher/bert_reconstruction.py --input_dir ./data/imdb/processed-dev --output_dir ./data/imdb/processed-dev/logits --seed 42 --num_workers 6 --get_reps --checkpoint_folder_pattern "checkpoint-9000" --save_doc_logits --no_dev 
+
+# pycharm
+python teacher/bert_reconstruction.py --input_dir ../data/imdb/processed-dev --output_dir ../data/imdb/processed-dev/logits --seed 42 --num_workers 6 --get_reps --checkpoint_folder_pattern "checkpoint-9000" --save_doc_logits --no_dev 
+
+
+
+
+python scholar/run_scholar.py ./data/imdb/processed-dev --dev-metric npmi -k 50 --epochs 500 --patience 500 --batch-size 200 --background-embeddings --device 0 --dev-prefix dev -l 0.002 --alpha 0.5 --eta-bn-anneal-step-const 0.25 --doc-reps-dir ./data/imdb/processed-dev/logits/checkpoint-9000/doc_logits --use-doc-layer --no-bow-reconstruction-loss --doc-reconstruction-weight 0.5 --doc-reconstruction-temp 1.0 --doc-reconstruction-logit-clipping 10.0 -o ./outputs/imdb

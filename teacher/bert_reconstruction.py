@@ -3,6 +3,7 @@ import json
 import random
 import logging
 from pathlib import Path
+import os
 
 import numpy as np
 from scipy import sparse
@@ -63,7 +64,6 @@ def save_json(obj, fpath):
 
 
 class DocDataset(Dataset):
-
     # Dataset abstract class
 
     """
@@ -98,7 +98,7 @@ class DocDataset(Dataset):
         self.n_classes = word_counts.shape[1]
         self.max_seq_length = max_seq_length or tokenizer.max_len
 
-        assert(len(self.examples["input_ids"]) == word_counts.shape[0])
+        assert (len(self.examples["input_ids"]) == word_counts.shape[0])
 
     def __len__(self):
         return len(self.examples["input_ids"])
@@ -169,8 +169,8 @@ def train(args, train_dataset, model, tokenizer, eval_dataset=None):
     )
 
     t_total = (
-        len(train_dataloader) // args.gradient_accumulation_steps *
-        args.num_train_epochs
+            len(train_dataloader) // args.gradient_accumulation_steps *
+            args.num_train_epochs
     )
 
     no_decay = ["bias", "LayerNorm.weight"]
@@ -252,7 +252,7 @@ def train(args, train_dataset, model, tokenizer, eval_dataset=None):
                     logs["loss"] = loss_scalar
                     logging_loss = tr_loss
 
-                    #print(json.dumps({**logs, **{"step": global_step}}))
+                    # print(json.dumps({**logs, **{"step": global_step}}))
                     # for k, v in {**logs, **{"step": global_step}}.items():
 
                 if args.save_steps > 0 and global_step % args.save_steps == 0:
@@ -283,13 +283,13 @@ def train(args, train_dataset, model, tokenizer, eval_dataset=None):
 
 
 def evaluate(
-    args,
-    eval_dataset,
-    model,
-    tokenizer,
-    return_probs=False,
-    return_logits=False,
-    return_pooled_layer=False,
+        args,
+        eval_dataset,
+        model,
+        tokenizer,
+        return_probs=False,
+        return_logits=False,
+        return_pooled_layer=False,
 ):
     """
     Evaluate the model on held-out data, also borrwed a lot from 
@@ -430,7 +430,7 @@ if __name__ == "__main__":
         default=None,
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
+             "than this will be truncated, sequences shorter will be padded.",
     )
     parser.add_argument(
         "--do_train", action="store_true", help="Whether to run training."
@@ -537,6 +537,8 @@ if __name__ == "__main__":
     set_seed(args)
 
     print(args)
+    cwd = os.getcwd()
+
 
     # load in the data, eliminating any empty documents
     vocab = load_json(Path(args.input_dir, args.vocab_fname))
@@ -559,6 +561,7 @@ if __name__ == "__main__":
     logger.info(f"Loading and tokenizing data")
     if not args.no_dev and args.dev_split > 0:
         from sklearn.model_selection import train_test_split
+
         args.dev_text_fname = None  # do not load any dev data
         train_ids, dev_ids, train_data, dev_data, train_word_counts, dev_word_counts = (
             train_test_split(
