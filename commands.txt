@@ -1,0 +1,6 @@
+python teacher/bert_reconstruction.py --input_dir ./data/imdb/processed-dev --output_dir ./data/imdb/processed-dev/logits --do_train --evaluate_during_training --logging_steps 200 --save_steps 1000 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 20  --gradient_accumulation_steps 8 
+
+
+
+
+python teacher/bert_reconstruction.py --output-dir ./data/imdb/processed-dev/logits --seed 42 --num-workers 6 --get-reps --checkpoint-folder-pattern "checkpoint-9000" --save-doc-logits --no-dev
