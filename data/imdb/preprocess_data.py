@@ -221,18 +221,22 @@ def preprocess_data(
     proc_multiplier=500,
 ):
 
+    cwd = os.getcwd()
+    print(cwd)
+
     if stopwords == "mallet":
         print("Using Mallet stopwords")
-        stopword_list = fh.read_text(os.path.join("stopwords", "mallet_stopwords.txt"))
+        stopword_list = fh.read_text(os.path.join(
+            "./data/imdb/stopwords", "mallet_stopwords.txt"))
     elif stopwords == "snowball":
         print("Using snowball stopwords")
         stopword_list = fh.read_text(
-            os.path.join("stopwords", "snowball_stopwords.txt")
+            os.path.join("./data/imdb/stopwords", "snowball_stopwords.txt")
         )
     elif stopwords is not None:
         print("Using custom stopwords")
         stopword_list = fh.read_text(
-            os.path.join("stopwords", stopwords + "_stopwords.txt")
+            os.path.join("./data/imdb/stopwords", stopwords + "_stopwords.txt")
         )
     else:
         stopword_list = []
@@ -253,8 +257,9 @@ def preprocess_data(
 
     n_items = n_train + n_test
 
+    label_lists = {}
+
     if label_fields:
-        label_lists = {}
         if "," in label_fields:
             label_fields = label_fields.split(",")
         else:
@@ -293,7 +298,8 @@ def preprocess_data(
     # tokenization must be appended to a list. this unfortunately implies a large
     # memory footprint
     for i, group in enumerate(chunkize(iter(train_items), chunksize=chunksize)):
-        print(f"On training chunk {i} of {len(train_items) // chunksize}", end="\r")
+        print(
+            f"On training chunk {i} of {len(train_items) // chunksize}", end="\r")
         for ids, tokens, labels in pool.imap(partial(_process_item, **kwargs), group):
             # store the parsed documents
             if ids is not None:
@@ -310,7 +316,8 @@ def preprocess_data(
     print("Train set processing complete")
 
     for i, group in enumerate(chunkize(iter(test_items), chunksize=chunksize)):
-        print(f"On testing chunk {i} of {len(test_items) // chunksize}", end="\r")
+        print(
+            f"On testing chunk {i} of {len(test_items) // chunksize}", end="\r")
         for ids, tokens, labels in pool.imap(partial(_process_item, **kwargs), group):
             # store the parsed documents
             if ids is not None:
@@ -347,7 +354,8 @@ def preprocess_data(
         for i, word in enumerate(words)
         if doc_counts[i] >= min_doc_count and doc_freqs[i] <= max_doc_freq
     ]
-    most_common = [word for i, word in enumerate(words) if doc_freqs[i] > max_doc_freq]
+    most_common = [word for i, word in enumerate(
+        words) if doc_freqs[i] > max_doc_freq]
     if max_doc_freq < 1.0:
         print(
             "Excluding words with frequency > {:0.2f}:".format(max_doc_freq),
@@ -365,9 +373,11 @@ def preprocess_data(
     print("Most common words remaining:", " ".join(vocab[:10]))
     vocab.sort()
 
-    fh.write_to_json(vocab, os.path.join(output_dir, train_prefix + ".vocab.json"))
+    fh.write_to_json(vocab, os.path.join(
+        output_dir, train_prefix + ".vocab.json"))
 
-    count_dtype = np.uint16 if max_doc_length < np.iinfo(np.uint16).max else np.int
+    count_dtype = np.uint16 if max_doc_length < np.iinfo(
+        np.uint16).max else np.int
 
     train_X_sage, tr_aspect, tr_no_aspect, tr_widx, vocab_for_sage = process_subset(
         train_items,
@@ -427,7 +437,8 @@ def _process_item(item, **kwargs):
     labels = None
     if label_fields:
         # TODO: probably don't want blind str conversion here
-        labels = {label_field: str(item[label_field]) for label_field in label_fields}
+        labels = {label_field: str(item[label_field])
+                  for label_field in label_fields}
     if text:
         tokens, _ = tokenize(text, **kwargs)
     else:
@@ -468,7 +479,8 @@ def process_subset(
                     labels_df_subset[category] = 0
 
             labels_df_subset.to_csv(
-                os.path.join(output_dir, output_prefix + "." + label_field + ".csv")
+                os.path.join(output_dir, output_prefix +
+                             "." + label_field + ".csv")
             )
             if labels_df[label_field].nunique() == 2:
                 labels_df_subset.iloc[:, 1].to_csv(
@@ -482,7 +494,7 @@ def process_subset(
                 zip(labels_df_subset.columns, range(len(labels_df_subset)))
             )
     X = np.zeros([n_items, vocab_size], dtype=count_dtype)
-    
+
     dat_strings = []
     dat_labels = []
     mallet_strings = []
@@ -506,7 +518,8 @@ def process_subset(
 
         if len(counter.keys()) > 0:
             # udpate the counts
-            mallet_strings.append(str(i) + "\t" + "en" + "\t" + " ".join(word_subset))
+            mallet_strings.append(str(i) + "\t" + "en" +
+                                  "\t" + " ".join(word_subset))
 
             dat_string = str(int(len(counter))) + " "
             dat_string += " ".join(
@@ -523,16 +536,19 @@ def process_subset(
                 dat_labels.append(str(label_index[str(label)]))
             values = np.array(list(counter.values()), dtype=count_dtype)
             X[
-                np.ones(len(counter.keys()), dtype=int) * i, list(counter.keys())
+                np.ones(len(counter.keys()), dtype=int) *
+                i, list(counter.keys())
             ] += values
 
     # convert to a sparse representation
     sparse_X = sparse.csr_matrix(X)
     fh.save_sparse(sparse_X, os.path.join(output_dir, output_prefix + ".npz"))
 
-    print("Size of {:s} document-term matrix:".format(output_prefix), sparse_X.shape)
+    print(
+        "Size of {:s} document-term matrix:".format(output_prefix), sparse_X.shape)
 
-    fh.write_to_json(ids, os.path.join(output_dir, output_prefix + ".ids.json"))
+    fh.write_to_json(ids, os.path.join(
+        output_dir, output_prefix + ".ids.json"))
 
     # save output for Mallet
     fh.write_list_to_text(
@@ -546,7 +562,8 @@ def process_subset(
     if len(dat_labels) > 0:
         fh.write_list_to_text(
             dat_labels,
-            os.path.join(output_dir, output_prefix + "." + label_field + ".dat"),
+            os.path.join(output_dir, output_prefix +
+                         "." + label_field + ".dat"),
         )
 
     # save output for Jacob Eisenstein's SAGE code:
@@ -610,7 +627,7 @@ def tokenize(
         tokens = unigrams
 
     tokens = [
-        "_".join(tokens[j : j + i])
+        "_".join(tokens[j: j + i])
         for i in range(min(ngram_range), max(ngram_range) + 1)
         for j in range(len(tokens) - i + 1)
     ]
@@ -657,4 +674,3 @@ def clean_text(
 
 if __name__ == "__main__":
     main(sys.argv)
-
