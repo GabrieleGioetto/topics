@@ -32,7 +32,7 @@ def main(call=None):
         help="Initial learning rate",
     )
     parser.add_argument(
-        "--eta-bn-anneal-step-const",
+        "--eta_bn_anneal_step_const",
         type=float,
         default=0.75,
         help="When to terminate batch-norm annealing, as a percentage of total epochs"
@@ -46,7 +46,7 @@ def main(call=None):
         help="beta1 for Adam",
     )
     parser.add_argument(
-        "--batch-size",
+        "--batch_size",
         dest="batch_size",
         type=int,
         default=200,
@@ -62,38 +62,38 @@ def main(call=None):
         help="Number of epochs to wait without improvement to dev-metric",
     )
     parser.add_argument(
-        "--dev-metric",
+        "--dev_metric",
         dest="dev_metric",
         type=str,
         default="perplexity",  # TODO: constrain options
         help="Optimize accuracy, perplexity, or internal npmi",
     )
     parser.add_argument(
-        "--npmi-words",
+        "--npmi_words",
         type=int,
         default=10,
         help="Number of words to use when calculating npmi"
     )
     parser.add_argument(
-        "--train-prefix",
+        "--train_prefix",
         type=str,
         default="train",
         help="Prefix of train set",
     )
     parser.add_argument(
-        "--dev-prefix",
+        "--dev_prefix",
         type=str,
         default=None,
         help="Prefix of dev set.",
     )
     parser.add_argument(
-        "--test-prefix",
+        "--test_prefix",
         type=str,
         default=None,
         help="Prefix of test set",
     )
     parser.add_argument(
-        "--no-bow-reconstruction-loss",
+        "--no_bow_reconstruction_loss",
         action="store_false",
         dest="reconstruct_bow",
         default=True,
@@ -106,13 +106,13 @@ def main(call=None):
         help="Read labels from input_dir/[train|test].labels.csv",
     )
     parser.add_argument(
-        "--prior-covars",
+        "--prior_covars",
         type=str,
         default=None,
         help="Read prior covariates from files with these names (comma-separated)",
     )
     parser.add_argument(
-        "--topic-covars",
+        "--topic_covars",
         type=str,
         default=None,
         help="Read topic covariates from files with these names (comma-separated)",
@@ -124,27 +124,27 @@ def main(call=None):
         help="Use interactions between topics and topic covariates",
     )
     parser.add_argument(
-        "--no-covars-predict",
+        "--no_covars_predict",
         action="store_false",
         dest="covars_predict",
         default=True,
         help="Do not use covariates as input to classifier",
     )
     parser.add_argument(
-        "--no-topics-predict",
+        "--no_topics_predict",
         action="store_false",
         dest="topics_predict",
         default=True,
         help="Do not use topics as input to classifier",
     )
     parser.add_argument(
-        "--min-prior-covar-count",
+        "--min_prior_covar_count",
         type=int,
         default=None,
         help="Drop prior covariates with less than this many non-zero values in the training dataa",
     )
     parser.add_argument(
-        "--min-topic-covar-count",
+        "--min_topic_covar_count",
         type=int,
         default=None,
         help="Drop topic covariates with less than this many non-zero values in the training dataa",
@@ -162,25 +162,25 @@ def main(call=None):
         help="Use default regularization",
     )
     parser.add_argument(
-        "--l1-topics",
+        "--l1_topics",
         type=float,
         default=0.0,
         help="Regularization strength on topic weights",
     )
     parser.add_argument(
-        "--l1-topic-covars",
+        "--l1_topic_covars",
         type=float,
         default=0.0,
         help="Regularization strength on topic covariate weights",
     )
     parser.add_argument(
-        "--l1-interactions",
+        "--l1_interactions",
         type=float,
         default=0.0,
         help="Regularization strength on topic covariate interaction weights",
     )
     parser.add_argument(
-        "--l2-prior-covars",
+        "--l2_prior_covars",
         type=float,
         default=0.0,
         help="Regularization strength on prior covariate weights",
@@ -198,110 +198,110 @@ def main(call=None):
         default=False,
         help="Restart training with model in output-dir",
     )
-    
+
     parser.add_argument(
-        "--save-at-training-end",
+        "--save_at_training_end",
         action="store_true",
         default=False,
         help="Save model at the end of training",
     )
 
     parser.add_argument(
-        "--emb-dim",
+        "--emb_dim",
         type=int,
         default=300,
         help="Dimension of input embeddings",
     )
 
     parser.add_argument(
-        "--background-embeddings",
+        "--background_embeddings",
         nargs="?",
         const='random',
         help="`--background-embeddings <optional path to embeddings>`"
     )
     parser.add_argument(
-        "--deviation-embeddings",
+        "--deviation_embeddings",
         nargs="?",
         const='random',
         help="`--deviation-embeddings <optional path to embeddings>`"
     )
     parser.add_argument(
-        "--deviation-embedding-covar",
+        "--deviation_embedding_covar",
         help="The covariate by which to vary the embeddings"
     )
 
     parser.add_argument(
-        "--fix-background-embeddings",
+        "--fix_background_embeddings",
         dest="update_background_embeddings",
         action="store_false",
         default=True,
     )
     parser.add_argument(
-        "--fix-deviation-embeddings",
+        "--fix_deviation_embeddings",
         dest="update_deviation_embeddings",
         action="store_false",
         default=True,
     )
     parser.add_argument(
-        "--ignore-deviation-embeddings",
+        "--ignore_deviation_embeddings",
         action="store_true",
         default=False,
         help="Experimental baseline to maintain parameter number",
     )
     parser.add_argument(
-        "--zero-out-embeddings",
+        "--zero_out_embeddings",
         action="store_true",
         default=False,
         help="Experimental switch to set all embeddings to 0",
     )
 
     parser.add_argument(
-        "--doc-reps-dir",
+        "--doc_reps_dir",
         help="Use document representation & specify the location",
     )
     parser.add_argument(
-        "--doc-reconstruction-weight",
+        "--doc_reconstruction_weight",
         type=float,
         default=None,
         help="How much to weigh doc repesentation reconstruction (0 means none)",
     )
     parser.add_argument(
-        "--doc-reconstruction-temp",
+        "--doc_reconstruction_temp",
         type=float,
         default=None,
         help="Temperature to use when softmaxing over the doc reconstruction logits",
     )
     parser.add_argument(
-        "--doc-reconstruction-min-count",
+        "--doc_reconstruction_min_count",
         type=float,
         default=0.,
         help="Minimum pseudo-count to accept",
     )
     parser.add_argument(
-        "--doc-reconstruction-logit-clipping",
+        "--doc_reconstruction_logit_clipping",
         type=float,
         default=None,
         help="Keep only the teacher logits corresponding to the top `N * x` unique words for each doc",
     )
     parser.add_argument(
-        "--attend-over-doc-reps",
+        "--attend_over_doc_reps",
         action="store_true",
         default=False,
         help="Attend over the doc-representation sequence",
     )
     parser.add_argument(
-        "--use-doc-layer",
+        "--use_doc_layer",
         action="store_true",
         default=False,
         help="Use a document projection layer",
     )
     parser.add_argument(
-        "--classify-from-doc-reps",
+        "--classify_from_doc_reps",
         action="store_true",
         help="Use document representations to classify?"
     )
     parser.add_argument(
-        "--randomize-doc-reps",
+        "--randomize_doc_reps",
         action="store_true",
         help="Baseline to randomize the document representations"
     )
@@ -313,19 +313,19 @@ def main(call=None):
         help="Hyperparameter for logistic normal prior",
     )
     parser.add_argument(
-        "--no-bg",
+        "--no_bg",
         action="store_true",
         default=False,
         help="Do not use background freq",
     )
     parser.add_argument(
-        "--dev-folds",
+        "--dev_folds",
         type=int,
         default=0,
         help="Number of dev folds. Ignored if --dev-prefix is used. default=%default"
     )
     parser.add_argument(
-        "--dev-fold",
+        "--dev_fold",
         type=int,
         default=0,
         help="Fold to use as dev (if dev_folds > 0). Ignored if --dev-prefix is used. default=%default",
@@ -345,7 +345,7 @@ def main(call=None):
         options.l1_topics = 1.0
         options.l1_topic_covars = 1.0
         options.l1_interactions = 1.0
-    
+
     if options.dev_prefix:
         options.dev_folds = 0
         options.dev_fold = 0
@@ -400,25 +400,26 @@ def main(call=None):
     options.n_labels = n_labels
 
     if (
-        options.doc_reconstruction_logit_clipping is not None 
+        options.doc_reconstruction_logit_clipping is not None
         and options.doc_reconstruction_logit_clipping > 0
     ):
         # limit the document representations to the top k labels
         doc_tokens = np.array((train_X > 0).sum(1)).reshape(-1)
 
         for i, (row, total) in enumerate(zip(train_doc_reps, doc_tokens)):
-            k = options.doc_reconstruction_logit_clipping * total # keep this many logits
+            k = options.doc_reconstruction_logit_clipping * total  # keep this many logits
             if k < vocab_size:
                 min_logit = np.quantile(row, 1 - k / vocab_size)
                 train_doc_reps[i, train_doc_reps[i] < min_logit] = -np.inf
-    
+
     if n_labels > 0:
         print("Train label proportions:", np.mean(train_labels, axis=0))
-    
+
     # split into training and dev if desired
     train_indices, dev_indices = train_dev_split(options, rng)
     train_X, dev_X = split_matrix(train_X, train_indices, dev_indices)
-    train_labels, dev_labels = split_matrix(train_labels, train_indices, dev_indices)
+    train_labels, dev_labels = split_matrix(
+        train_labels, train_indices, dev_indices)
     train_prior_covars, dev_prior_covars = split_matrix(
         train_prior_covars, train_indices, dev_indices
     )
@@ -433,7 +434,7 @@ def main(call=None):
         train_ids = [train_ids[i] for i in train_indices]
     else:
         dev_ids = None
-    
+
     doc_reps_dim = train_doc_reps.shape[-1] if options.doc_reps_dir else None
     n_train, _ = train_X.shape
 
@@ -468,8 +469,8 @@ def main(call=None):
             )
         except FileNotFoundError:
             print("Dev document representation not found, will set to log of dev_X")
-            dev_doc_reps = np.log(np.array(dev_X.todense()) + 1e-10) # HACK
-    
+            dev_doc_reps = np.log(np.array(dev_X.todense()) + 1e-10)  # HACK
+
     # load the test data
     test_ids = None
     if options.test_prefix is not None:
@@ -509,11 +510,11 @@ def main(call=None):
         test_topic_covars = None
         test_doc_reps = None
 
-
     # collect label data for the deviations
     if options.deviation_embeddings:
         if not options.deviation_embedding_covar:
-            raise ValueError("Need to supply a covariate for deviation embeddings")
+            raise ValueError(
+                "Need to supply a covariate for deviation embeddings")
 
         # hijack the unused `prior_covars` by storing deviation covar data in these objects
         # luckily all checks are performed on `n_prior_covars`, which is 0
@@ -536,8 +537,7 @@ def main(call=None):
         if options.ignore_deviation_embeddings:
             train_prior_covars = np.ones_like(train_prior_covars)
             dev_prior_covars = np.ones_like(dev_prior_covars)
-            test_prior_covars = np.ones_like(test_prior_covars) 
-
+            test_prior_covars = np.ones_like(test_prior_covars)
 
     # initialize the background using overall word frequencies
     init_bg = get_init_bg(train_X)
@@ -564,7 +564,7 @@ def main(call=None):
     if options.background_embeddings:
         fpath = None if options.background_embeddings == 'random' else options.background_embeddings
         embeddings['background'] = load_word_vectors(
-            fpath=fpath, # if None, they are randomly initialized
+            fpath=fpath,  # if None, they are randomly initialized
             emb_dim=options.emb_dim,
             update_embeddings=options.update_background_embeddings,
             rng=rng,
@@ -606,10 +606,13 @@ def main(call=None):
 
     if options.randomize_doc_reps:
         min_dr, max_dr = train_doc_reps.min(), train_doc_reps.max()
-        train_doc_reps = np.random.uniform(min_dr, max_dr, size=train_doc_reps.shape)
-        dev_doc_reps = np.random.uniform(min_dr, max_dr, size=dev_doc_reps.shape)
+        train_doc_reps = np.random.uniform(
+            min_dr, max_dr, size=train_doc_reps.shape)
+        dev_doc_reps = np.random.uniform(
+            min_dr, max_dr, size=dev_doc_reps.shape)
         if test_doc_reps is not None:
-            test_doc_reps = np.random.uniform(min_dr, max_dr, size=test_doc_reps.shape)
+            test_doc_reps = np.random.uniform(
+                min_dr, max_dr, size=test_doc_reps.shape)
 
     # make output directory
     fh.makedirs(options.output_dir)
@@ -651,7 +654,8 @@ def main(call=None):
         save_scholar_model(options, model, epoch=options.epochs, is_final=True)
         model.eval()
     # display and save weights
-    print_and_save_weights(options, model, vocab, prior_covar_names, topic_covar_names)
+    print_and_save_weights(options, model, vocab,
+                           prior_covar_names, topic_covar_names)
 
     # Evaluate perplexity on dev and test data
     if dev_X is not None:
@@ -667,7 +671,8 @@ def main(call=None):
         )
         print("Dev perplexity = %0.4f" % perplexity)
         fh.write_list_to_text(
-            [str(perplexity)], os.path.join(options.output_dir, "perplexity.dev.txt")
+            [str(perplexity)], os.path.join(
+                options.output_dir, "perplexity.dev.txt")
         )
 
     if test_X is not None:
@@ -683,7 +688,8 @@ def main(call=None):
         )
         print("Test perplexity = %0.4f" % perplexity)
         fh.write_list_to_text(
-            [str(perplexity)], os.path.join(options.output_dir, "perplexity.test.txt")
+            [str(perplexity)], os.path.join(
+                options.output_dir, "perplexity.test.txt")
         )
 
     # evaluate accuracy on predicting labels
@@ -785,7 +791,8 @@ def load_word_counts(input_dir, input_prefix, vocab=None):
     X = X.astype(np.float32)
     # load the vocabulary
     if vocab is None:
-        vocab = fh.read_json(os.path.join(input_dir, input_prefix + ".vocab.json"))
+        vocab = fh.read_json(os.path.join(
+            input_dir, input_prefix + ".vocab.json"))
     n_items, vocab_size = X.shape
     assert vocab_size == len(vocab)
     print("Loaded %d documents with %d features" % (n_items, vocab_size))
@@ -820,7 +827,8 @@ def load_labels(input_dir, input_prefix, row_selector, labels=None):
             n, n_labels = labels.shape
             print("Found %d labels" % n_labels)
         else:
-            raise (FileNotFoundError("Label file {:s} not found".format(label_file)))
+            raise (FileNotFoundError(
+                "Label file {:s} not found".format(label_file)))
 
     return labels, label_type, label_names, n_labels
 
@@ -859,7 +867,8 @@ def load_covariates(
             else:
                 raise (
                     FileNotFoundError(
-                        "Covariates file {:s} not found".format(covariates_file)
+                        "Covariates file {:s} not found".format(
+                            covariates_file)
                     )
                 )
 
@@ -899,12 +908,13 @@ def load_doc_reps(input_dir, prefix, row_selector, use_sequences=False):
         doc_reps = np.load(doc_rep_fpath)
         if not use_sequences:
             return doc_reps[row_selector, :]
-        
+
         tokens_fpath = os.path.join(input_dir, f"{prefix}.tokens.npy")
         tokens = np.load(tokens_fpath)[:, :, None]
         mask = tokens > 0
         doc_reps = np.insert(doc_reps, [0], mask, axis=2)
         return doc_reps[row_selector, :]
+
 
 def train_dev_split(options, rng):
     # randomly split into train and dev
@@ -914,10 +924,10 @@ def train_dev_split(options, rng):
         rng.shuffle(indices)
         if options.dev_fold < options.dev_folds - 1:
             dev_indices = indices[
-                n_dev * options.dev_fold : n_dev * (options.dev_fold + 1)
+                n_dev * options.dev_fold: n_dev * (options.dev_fold + 1)
             ]
         else:
-            dev_indices = indices[n_dev * options.dev_fold :]
+            dev_indices = indices[n_dev * options.dev_fold:]
         train_indices = list(set(indices) - set(dev_indices))
         return train_indices, dev_indices
 
@@ -948,7 +958,7 @@ def get_init_bg(data):
 
 
 def load_word_vectors(fpath, emb_dim, update_embeddings, rng, vocab):
-    
+
     # load word2vec vectors if given
     if fpath is not None:
         vocab_size = len(vocab)
@@ -975,10 +985,10 @@ def load_word_vectors(fpath, emb_dim, update_embeddings, rng, vocab):
 
         print("Found embeddings for %d words" % count)
     else:
-        
-        update_embeddings = True # always true if unspecified
+
+        update_embeddings = True  # always true if unspecified
         embeddings = None
-    
+
     return embeddings, update_embeddings
 
 
@@ -1057,7 +1067,8 @@ def train(
 
     num_epochs_no_improvement = 0
 
-    eta_bn_prop = init_eta_bn_prop  # interpolation between batch norm and no batch norm in final layer of recon
+    # interpolation between batch norm and no batch norm in final layer of recon
+    eta_bn_prop = init_eta_bn_prop
 
     model.train()
 
@@ -1068,7 +1079,8 @@ def train(
     # create matrices to track the current estimates of the priors on the individual weights
     if network_architecture["l1_beta_reg"] > 0:
         l1_beta = (
-            0.5 * np.ones([vocab_size, n_topics], dtype=np.float32) / float(n_train)
+            0.5 * np.ones([vocab_size, n_topics],
+                          dtype=np.float32) / float(n_train)
         )
     else:
         l1_beta = None
@@ -1133,7 +1145,8 @@ def train(
             avg_kld += float(kld) / n_train * batch_size
             batches += 1
             if np.isnan(avg_cost):
-                print(epoch, i, np.sum(batch_xs, 1).astype(np.int), batch_xs.shape)
+                print(epoch, i, np.sum(batch_xs, 1).astype(
+                    np.int), batch_xs.shape)
                 print(
                     "Encountered NaN, stopping training. Please check the learning_rate settings and the momentum."
                 )
@@ -1179,7 +1192,8 @@ def train(
                     "{:.9f}".format(accuracy),
                 )
             else:
-                print("Epoch:", "%d" % epoch, "cost=", "{:.9f}".format(avg_cost))
+                print("Epoch:", "%d" %
+                      epoch, "cost=", "{:.9f}".format(avg_cost))
 
             if X_dev is not None:
                 # switch to eval mode for intermediate evaluation
@@ -1224,14 +1238,16 @@ def train(
                     f"Dev NPMI = {dev_npmi:0.4f}"
                 )
 
-                best_dev_metrics = update_metrics(epoch_metrics, best_dev_metrics, epoch)
+                best_dev_metrics = update_metrics(
+                    epoch_metrics, best_dev_metrics, epoch)
                 if best_dev_metrics[dev_metric]["epoch"] == epoch:
                     num_epochs_no_improvement = 0
                     save_scholar_model(options, model, epoch, best_dev_metrics)
                 else:
                     num_epochs_no_improvement += 1
                 if patience is not None and num_epochs_no_improvement >= patience:
-                    print(f"Ran out of patience ({patience} epochs), returning model")
+                    print(
+                        f"Ran out of patience ({patience} epochs), returning model")
                     return model
                 # switch back to training mode
                 model.train()
@@ -1239,7 +1255,8 @@ def train(
         # anneal eta_bn_prop from 1.0 to 0.0 over training
         if bn_anneal:
             if eta_bn_prop > 0:
-                eta_bn_prop -= 1.0 / float(eta_bn_anneal_step_const * training_epochs)
+                eta_bn_prop -= 1.0 / \
+                    float(eta_bn_anneal_step_const * training_epochs)
                 if eta_bn_prop < 0:
                     eta_bn_prop = 0.0
 
@@ -1279,7 +1296,6 @@ def create_minibatch(X, Y, PC, TC, DR, batch_size=200, rng=None):
         else:
             DR_mb = None
 
-
         yield X_mb, Y_mb, PC_mb, TC_mb, DR_mb
 
 
@@ -1311,9 +1327,9 @@ def get_minibatch(X, Y, PC, TC, DR, batch, batch_size=200):
         TC_mb = None
 
     if DR is not None:
-       DR_mb = DR[ixs, :].astype("float32")
+        DR_mb = DR[ixs, :].astype("float32")
     else:
-        DR_mb = None    
+        DR_mb = None
 
     return X_mb, Y_mb, PC_mb, TC_mb, DR_mb
 
@@ -1337,7 +1353,7 @@ def update_metrics(current, best=None, epoch=None):
                 "value": current[metric],
                 "epoch": epoch
             }
-    
+
     return best
 
 
@@ -1383,7 +1399,8 @@ def print_and_save_weights(
         ["{:.4f}".format(maw)], os.path.join(options.output_dir, "maw.txt")
     )
     fh.write_list_to_text(
-        ["{:.4f}".format(sparsity)], os.path.join(options.output_dir, "sparsity.txt")
+        ["{:.4f}".format(sparsity)], os.path.join(
+            options.output_dir, "sparsity.txt")
     )
 
     if prior_covar_names is not None:
@@ -1495,10 +1512,11 @@ def print_top_words(
 def print_top_bg(bg, feature_names, n_top_words=10):
     # Print the most highly weighted words in the background log frequency
     print("Background frequencies of top words:")
-    print(" ".join([feature_names[j] for j in bg.argsort()[: -n_top_words - 1 : -1]]))
+    print(" ".join([feature_names[j]
+                    for j in bg.argsort()[: -n_top_words - 1: -1]]))
     temp = bg.copy()
     temp.sort()
-    print(np.exp(temp[: -n_top_words - 1 : -1]))
+    print(np.exp(temp[: -n_top_words - 1: -1]))
 
 
 def evaluate_perplexity(model, X, Y, PC, TC, DR, batch_size, eta_bn_prop=0.0):
@@ -1546,6 +1564,7 @@ def save_weights(output_dir, beta, bg, feature_names, sparsity_threshold=1e-5):
 
     fh.write_list_to_text(lines, topics_file)
 
+
 def generate_topics(beta, feature_names, n=100, sparsity_threshold=1e-5):
     """
     Create topics from the beta parameter
@@ -1559,23 +1578,27 @@ def generate_topics(beta, feature_names, n=100, sparsity_threshold=1e-5):
         ]
         output = " ".join(pos_words)
         lines.append(output)
-    
+
     return lines
+
 
 def predict_labels_and_evaluate(
     model, X, Y, PC, TC, DR, output_dir=None, subset="train", batch_size=200
 ):
     # Predict labels for all instances using the classifier network and evaluate the accuracy
-    pred_probs = predict_label_probs(model, X, PC, TC, DR, batch_size, eta_bn_prop=0.0)
+    pred_probs = predict_label_probs(
+        model, X, PC, TC, DR, batch_size, eta_bn_prop=0.0)
     np.savez(
         os.path.join(output_dir, "pred_probs." + subset + ".npz"), pred_probs=pred_probs
     )
     predictions = np.argmax(pred_probs, axis=1)
-    accuracy = float(np.sum(predictions == np.argmax(Y, axis=1)) / float(len(Y)))
+    accuracy = float(
+        np.sum(predictions == np.argmax(Y, axis=1)) / float(len(Y)))
     print(subset, "accuracy on labels = %0.4f" % accuracy)
     if output_dir is not None:
         fh.write_list_to_text(
-            [str(accuracy)], os.path.join(output_dir, "accuracy." + subset + ".txt")
+            [str(accuracy)], os.path.join(
+                output_dir, "accuracy." + subset + ".txt")
         )
 
 
@@ -1632,7 +1655,8 @@ def save_document_representations(
             X, Y, PC, TC, DR, i, batch_size
         )
         thetas.append(
-            model.compute_theta(batch_xs, batch_ys, batch_pcs, batch_tcs, batch_drs)
+            model.compute_theta(batch_xs, batch_ys,
+                                batch_pcs, batch_tcs, batch_drs)
         )
     theta = np.vstack(thetas)
 
@@ -1688,4 +1712,3 @@ def load_scholar_model(inpath, embeddings=None, map_location=None):
 
 if __name__ == "__main__":
     main()
-

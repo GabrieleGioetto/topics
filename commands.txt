@@ -13,4 +13,4 @@ python teacher/bert_reconstruction.py --input_dir ../data/imdb/processed-dev --o
 
 
 
-python scholar/run_scholar.py ./data/imdb/processed-dev --dev-metric npmi -k 50 --epochs 500 --patience 500 --batch-size 200 --background-embeddings --device 0 --dev-prefix dev -l 0.002 --alpha 0.5 --eta-bn-anneal-step-const 0.25 --doc-reps-dir ./data/imdb/processed-dev/logits/checkpoint-9000/doc_logits --use-doc-layer --no-bow-reconstruction-loss --doc-reconstruction-weight 0.5 --doc-reconstruction-temp 1.0 --doc-reconstruction-logit-clipping 10.0 -o ./outputs/imdb
+python scholar/run_scholar.py ./data/imdb/processed-dev --dev_metric npmi -k 50 --epochs 500 --patience 500 --batch_size 200 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/imdb/processed-dev/logits/checkpoint-9000/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/imdb
