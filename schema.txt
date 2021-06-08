@@ -1,0 +1,25 @@
+PRE PROCESSING
+
+
+TEACHER ( BERT )
+
+    Comando # 3 ( Creazione modello )
+    - Carico vocaboli da vocab.json ( vocaboli pertinenti ) e tolgo documenti nulli
+    - Carico i dati ( cioè i testi completi divisi per articolo ), i word counts ( cioè la matrice di frequency encoder sulle parole importanti) e gli id ( degli articoli)
+    - Facciamo il train ( Gradient AdamW ), ogni n step si fa un checkpoint (salva il modello)
+
+    Comando #4 ( Creazione logits )
+    - Carico modello creato in precedenza
+    - Richiamo l'evaluate con return_logits=True ( Mi calcolo i logits, cioè una matrice in cui per ogni documento c'è "l'importanza" della parola )
+        La matrice ritornata è 9011 X 1995 ( 1995 sono le parole, mentre 9011 sono i documenti dopo il sampling (riga 298 bert_reconstruction.py))
+
+
+SCHOLAR
+    - Carica i word counts ( la matrice di frequency encoder sulle parole importanti )
+    - Carica il vocabolario
+    - Carica gli id
+    - Filtra documenti nulli
+    - Load document representations, an [num_docs x doc_dim] matrix ( Carica i logits, anche qui filtrando le linee nulle)
+    - Per ogni documento teniamo le top k parole, con l'ordinamento in base ai logits ( k non si capisce come è calcolato )
+    - Carica i dev ( passaggi descritti qui sopra)
+    - Riga 542
