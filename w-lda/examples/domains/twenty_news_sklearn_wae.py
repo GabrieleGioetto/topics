@@ -26,6 +26,8 @@ class TwentyNews(Data):
         super(TwentyNews, self).__init__(batch_size, data_path, ctx)
 
     def load(self, path='~/20news_sklearn', features='BoW', match_avitm=True):
+
+        print("LOAAAD")
         if path[:2] == '~/':
             path = os.path.join(os.path.expanduser(path[:2]), path[2:])
 

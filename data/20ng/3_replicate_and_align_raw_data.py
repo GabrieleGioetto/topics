@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from utils import load_sparse, save_sparse, save_jsonlist, save_json
 
+
 tag_to_wn = {
     "NN": wn.NOUN,
     "NNS": wn.NOUN,
@@ -67,6 +68,8 @@ if __name__ == "__main__":
     raw_train = fetch_20newsgroups(data_home="./intermediate", subset="train")
     raw_test = fetch_20newsgroups(data_home="./intermediate", subset="test")
 
+    print("1")
+
     # Turn the raw text into count data
     wnl = WordNetLemmatizer()
     raw_tokens_train = [
@@ -79,6 +82,9 @@ if __name__ == "__main__":
     ]
     raw_counts_train = np.array([toks_to_onehot(doc, vocab_dict) for doc in raw_tokens_train])
     raw_counts_test = np.array([toks_to_onehot(doc, vocab_dict) for doc in raw_tokens_test])
+
+    print("2")
+
 
     # filter out the zero-counts
     nonzero_train = raw_counts_train.sum(1) > 0
@@ -107,6 +113,8 @@ if __name__ == "__main__":
         for doc in raw_data_test:
             doc['text'] = doc['text'][doc['text'].index('\n\n'):]
 
+    print("3")
+
     # keep this pseudo-ProdLDA version
     Path("replicated").mkdir(exist_ok=True)
     save_sparse(sparse.coo_matrix(raw_counts_train), "./replicated/train.npz")
@@ -124,6 +132,8 @@ if __name__ == "__main__":
     save_json([d['id'] for d in raw_data_test], "./replicated/test.ids.json")
 
     ## Alignment -- currently ok, but not great
+
+    print("4")
 
     # tf-idf transform
     tfidf = TfidfTransformer()
@@ -144,6 +154,8 @@ if __name__ == "__main__":
     min_dists_train = dists_train.argmin(1)
     min_dists_test = dists_test.argmin(1)
 
+    print("5")
+
     # do the alignment
     aligned_tokens_train = [raw_tokens_train[idx] for idx in min_dists_train]
     aligned_tokens_test = [raw_tokens_test[idx] for idx in min_dists_test]
@@ -153,6 +165,8 @@ if __name__ == "__main__":
 
     assert(len(aligned_data_train) == orig_counts_train.shape[0])
     assert(len(aligned_data_test) == orig_counts_test.shape[0])
+
+    print("6")
 
     # save the aligned data
     save_json(aligned_tokens_train, "./aligned/train.tokens.json")

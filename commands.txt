@@ -1,16 +1,32 @@
-python teacher/bert_reconstruction.py --input_dir ./data/imdb/processed-dev --output_dir ./data/imdb/processed-dev/logits --do_train --evaluate_during_training --logging_steps 200 --save_steps 1000 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 20  --gradient_accumulation_steps 8 
+IMDB
+
+# 3
+python teacher/bert_reconstruction.py --input_dir ./data/imdb/processed-dev --output_dir ./data/imdb/processed-dev/logits --do_train --evaluate_during_training --logging_steps 200 --save_steps 1000 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 10  --gradient_accumulation_steps 8 
 
 #pycharm
 python teacher/bert_reconstruction.py --input_dir ../data/imdb/processed-dev --output_dir ../data/imdb/processed-dev/logits --do_train --evaluate_during_training --logging_steps 200 --save_steps 1000 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 20  --gradient_accumulation_steps 8 
 
 
-
+# 4
 python teacher/bert_reconstruction.py --input_dir ./data/imdb/processed-dev --output_dir ./data/imdb/processed-dev/logits --seed 42 --num_workers 6 --get_reps --checkpoint_folder_pattern "checkpoint-9000" --save_doc_logits --no_dev 
 
 # pycharm
 python teacher/bert_reconstruction.py --input_dir ../data/imdb/processed-dev --output_dir ../data/imdb/processed-dev/logits --seed 42 --num_workers 6 --get_reps --checkpoint_folder_pattern "checkpoint-9000" --save_doc_logits --no_dev 
 
 
+# 5
+python scholar/run_scholar.py ./data/imdb/processed-dev --dev_metric npmi -k 50 --epochs 500 --patience 500 --batch_size 200 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/imdb/processed-dev/logits/checkpoint-1000/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/imdb
 
 
-python scholar/run_scholar.py ./data/imdb/processed-dev --dev_metric npmi -k 50 --epochs 500 --patience 500 --batch_size 200 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/imdb/processed-dev/logits/checkpoint-9000/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/imdb
+-------------------------------------------------------------------------------------------------------------------
+
+20NG
+
+# 3 ( tolto evaluation during training)
+python teacher/bert_reconstruction.py --input_dir ./data/20ng/aligned/dev --output_dir ./data/20ng/aligned/dev/logits --do_train --logging_steps 200 --save_steps 100 --num_train_epochs 6 --seed 42 --num_workers 4 --batch_size 10  --gradient_accumulation_steps 8 
+
+#4
+python teacher/bert_reconstruction.py --output_dir ./data/20ng/aligned/dev/logits --seed 42 --num_workers 6 --get_reps --save_doc_logits --no_dev --checkpoint_folder_pattern "checkpoint-600"
+
+# 5
+python scholar/run_scholar.py ./data/20ng/aligned/dev --dev_metric npmi -k 50 --epochs 500 --patience 500 --batch_size 200 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/20ng/aligned/dev/logits/checkpoint-600/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/20ng
