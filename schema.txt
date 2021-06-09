@@ -21,5 +21,27 @@ SCHOLAR
     - Filtra documenti nulli
     - Load document representations, an [num_docs x doc_dim] matrix ( Carica i logits, anche qui filtrando le linee nulle)
     - Per ogni documento teniamo le top k parole, con l'ordinamento in base ai logits ( k non si capisce come è calcolato )
-    - Carica i dev ( passaggi descritti qui sopra)
+    - Carica i dev nello stesso modo ( passaggi descritti qui sopra)
     - Riga 542
+    - Inizializza il background ( per ogni parola in word count, cioè per ogni colonna, fa la somma dei valori e poi ne calcola e lo normalizza  )
+    - Background: randomly initialize word vectors for each term in the vocabualry
+    - load the word2vec vectors
+    - replace the randomly initialized vectors with the word2vec ones for any that are available
+    - Inizializza il modello e fa il training:
+        - create matrices to track the current estimates of the priors on the individual weights
+        - Training cycle:
+            - loop over batches:
+                - Do minibatch update
+                - compute accuracy and average loss on minibatch
+                - if we're using regularization, update the priors on the individual weights
+                - anneal eta_bn_prop from 1.0 to 0.0 over training
+    - Salvo il modello
+    - Stampo:
+        - Print the most highly weighted words in the background log frequency
+        - Display the highest and lowest weighted words in each topic, along with mean ave weight and sparisty
+        - Stampo sparsity in topics
+        - Salvo i model weights ( beta.npz e bg.npz ?)
+        - Salvo in vocab.json il dizionario
+        - Create top=100 topics (with sparsity threshold) from the beta parameter e save in topics.txt
+        - (max significa meanAverageWeigth delle parole in each topic (Dovrebbe essere una lista))
+        
