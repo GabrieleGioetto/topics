@@ -42,6 +42,6 @@ SCHOLAR
         - Stampo sparsity in topics
         - Salvo i model weights ( beta.npz e bg.npz ?)
         - Salvo in vocab.json il dizionario
-        - Create top=100 topics (with sparsity threshold) from the beta parameter e save in topics.txt
+        - Create top=100 topics (with sparsity threshold) from the beta parameter e save in topics.txt (beta = emb = model.get_weights())
         - (max significa meanAverageWeigth delle parole in each topic (Dovrebbe essere una lista))
-        
+        - topic_covar_names argomanto non specificato (Covariate deviactions / intersactions)
