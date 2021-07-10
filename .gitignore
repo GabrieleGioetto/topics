@@ -1,4 +1,8 @@
 data/20ng/aligned/dev/logits/
 data/imdb/processed-dev/logits/
 Miniconda*
-
+data/repubblica/intermediate*
+data/repubblica/642*
+data/20ng/intermediate/
+data/20ng/replicated/
+data/repubblica/data/

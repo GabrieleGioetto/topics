@@ -1,6 +1,8 @@
 #python 3.8
 import json
 from pathlib import Path
+import pickle
+
 
 import numpy as np
 from scipy import sparse
@@ -22,19 +24,23 @@ import spacy
 import sys
 
 
-def process_raw_doc(doc, vocab, lemmatizer):
-    with open(doc) as f:
+def process_raw_doc(doc, vocab, lemmatizer):                                                                  
+    tokenized = word_tokenize(doc)
+    lemmatized = [        
+        lemmatizer(w)[0].lemma_.lower() for w in tokenized      
+    ]
+
+    # print(lemmatized)
+    # sys.exit()
+    return [word for word in lemmatized if word in vocab]
+
+def read_text(filename, id):
+    with open(filename) as f:
         data = json.load(f)
         text = data["text"]
-                                                                    
-        tokenized = word_tokenize(text)
-        lemmatized = [        
-            lemmatizer(w)[0].lemma_.lower() for w in tokenized      
-        ]
-
-        # print(lemmatized)
-        # sys.exit()
-        return [word for word in lemmatized if word in vocab]
+        url = data["url"]
+        
+        return {"text": text, "id": id, "url": url}
 
 
 def toks_to_onehot(doc, vocab):
@@ -46,31 +52,61 @@ if __name__ == "__main__":
     ## Re-processing
     REMOVE_HEADER = False
 
-    with open("./aligned/train.vocab.json", "r") as infile:
+    # inputFolder = "./aligned"
+    inputFolder = "./alignedProva"
+    dataFolder = "./dataProva"
+    replicatedFolder = "./replicatedProva"
+    vocabFolder = "./vocab"
+
+    # count_train = 15150
+    # count_test = 20201
+    count_train = 7
+    count_test = 10
+
+    with open(f"{vocabFolder}/vocab_dict.json", "r") as infile:
         vocab = json.load(infile)
         vocab_dict = dict(zip(vocab, range(len(vocab))))
     
     # Read in the ProdLDA 20ng data
-    orig_counts_train = load_sparse("./aligned/train.npz").todense()
-    orig_counts_test = load_sparse("./aligned/test.npz").todense()
+    orig_counts_train = load_sparse(f"{inputFolder}/train.npz").todense()
+    orig_counts_test = load_sparse(f"{inputFolder}/test.npz").todense()
 
+    # print(orig_counts_train.shape)
+    # print(orig_counts_test.shape)
 
     # Get the original raw text
     # raw_train = fetch_20newsgroups(data_home="./intermediate", subset="train")
     # raw_test = fetch_20newsgroups(data_home="./intermediate", subset="test")
 
-    raw_train_file_names = glob.glob("./data/news_*")[:15150]
-    raw_test_file_names = glob.glob("./data/news_*")[15151:20201]
+    raw_train_file_names = glob.glob(f"{dataFolder}/news_*")[:count_train]
+    raw_test_file_names = glob.glob(f"{dataFolder}/news_*")[count_train:count_test]
 
     # print(len(raw_train))
     # print(raw_train[:10])
     # print(len(raw_test))
 
     # Sample di prova
-    orig_counts_train = orig_counts_train[:20]
-    orig_counts_test = orig_counts_test[:10]
-    raw_train_file_names = raw_train_file_names[:20]
-    raw_test_file_names = raw_test_file_names[:10]
+    # orig_counts_train = orig_counts_train[:20]
+    # orig_counts_test = orig_counts_test[:10]
+    # raw_train_file_names = raw_train_file_names[:20]
+    # raw_test_file_names = raw_test_file_names[:10]
+
+    raw_train = [read_text(f,id) for id,f in enumerate(tqdm(raw_train_file_names))]
+
+    contatore_train = len(raw_train)
+    print(f"contatore_train: {contatore_train}")
+
+    raw_test = [read_text(f, contatore_train + id) for id,f in enumerate(tqdm(raw_test_file_names))]
+    
+    print("READ FILES")
+
+    with open(f"{inputFolder}/raw_train.dat", "wb") as f:
+        pickle.dump(raw_train, f)
+    with open(f"{inputFolder}/raw_test.dat", "wb") as f:
+        pickle.dump(raw_test, f)
+
+    print("SAVED PICKLES")
+
 
     print("1")
 
@@ -79,15 +115,25 @@ if __name__ == "__main__":
     wnl = spacy.load('it_core_news_sm')
 
     raw_tokens_train = [
-        process_raw_doc(doc, vocab_dict, wnl) 
-        for doc in tqdm(raw_train_file_names)
+        process_raw_doc(doc["text"], vocab_dict, wnl) 
+        for doc in tqdm(raw_train)
     ]
     raw_tokens_test = [
-        process_raw_doc(doc, vocab_dict, wnl) 
-        for doc in tqdm(raw_test_file_names)
+        process_raw_doc(doc["text"], vocab_dict, wnl) 
+        for doc in tqdm(raw_test)
     ]
+
+
+    with open(f"{inputFolder}/raw_counts_train.dat", "wb") as f:
+        pickle.dump(raw_train, f)
+    with open(f"{inputFolder}/raw_counts_test.dat", "wb") as f:
+        pickle.dump(raw_test, f)
+
+    print("SAVED PICKLE")
+
     raw_counts_train = np.array([toks_to_onehot(doc, vocab_dict) for doc in raw_tokens_train])
     raw_counts_test = np.array([toks_to_onehot(doc, vocab_dict) for doc in raw_tokens_test])
+
 
     print("2")
 
@@ -109,11 +155,11 @@ if __name__ == "__main__":
     raw_counts_test = raw_counts_test[nonzero_test]
 
     raw_data_train = [
-        {'id': idx, 'text': raw_train.data[idx], 'fpath': raw_train.filenames[idx]}
+        {'id': idx, 'text': raw_train[idx]["text"], 'fpath': raw_train[idx]["url"]}
         for idx in raw_ids_train
     ]
     raw_data_test = [
-        {'id': idx, 'text': raw_test.data[idx], 'fpath': raw_test.filenames[idx]}
+        {'id': idx, 'text': raw_test[idx]["text"], 'fpath': raw_test[idx]["url"]}
         for idx in raw_ids_test
     ]
     if REMOVE_HEADER:
@@ -125,20 +171,20 @@ if __name__ == "__main__":
     print("3")
 
     # keep this pseudo-ProdLDA version
-    Path("replicated").mkdir(exist_ok=True)
-    save_sparse(sparse.coo_matrix(raw_counts_train), "./replicated/train.npz")
-    save_sparse(sparse.coo_matrix(raw_counts_test), "./replicated/test.npz")
+    Path(f"{replicatedFolder}").mkdir(exist_ok=True)
+    save_sparse(sparse.coo_matrix(raw_counts_train), f"{replicatedFolder}/train.npz")
+    save_sparse(sparse.coo_matrix(raw_counts_test), f"{replicatedFolder}/test.npz")
 
-    save_json(vocab, "./replicated/train.vocab.json")
+    save_json(vocab, f"{replicatedFolder}/train.vocab.json")
 
-    save_json(raw_tokens_train, "./replicated/train.tokens.json")
-    save_json(raw_tokens_test, "./replicated/test.tokens.json")
+    save_json(raw_tokens_train, f"{replicatedFolder}/train.tokens.json")
+    save_json(raw_tokens_test, f"{replicatedFolder}/test.tokens.json")
 
-    save_jsonlist(raw_data_train, "./replicated/train.jsonlist")
-    save_jsonlist(raw_data_test, "./replicated/test.jsonlist")
+    save_jsonlist(raw_data_train, f"{replicatedFolder}/train.jsonlist")
+    save_jsonlist(raw_data_test, f"{replicatedFolder}/test.jsonlist")
 
-    save_json([d['id'] for d in raw_data_train], "./replicated/train.ids.json")
-    save_json([d['id'] for d in raw_data_test], "./replicated/test.ids.json")
+    save_json([d['id'] for d in raw_data_train], f"{replicatedFolder}/train.ids.json")
+    save_json([d['id'] for d in raw_data_test], f"{replicatedFolder}/test.ids.json")
 
     # Alignment -- currently ok, but not great
 
@@ -178,11 +224,11 @@ if __name__ == "__main__":
     print("6")
 
     # save the aligned data
-    save_json(aligned_tokens_train, "./aligned/train.tokens.json")
-    save_json(aligned_tokens_test, "./aligned/test.tokens.json")
+    save_json(aligned_tokens_train, f"{inputFolder}/train.tokens.json")
+    save_json(aligned_tokens_test, f"{inputFolder}/test.tokens.json")
 
-    save_jsonlist(aligned_data_train, "./aligned/train.jsonlist")
-    save_jsonlist(aligned_data_test, "./aligned/test.jsonlist")
+    save_jsonlist(aligned_data_train, f"{inputFolder}/train.jsonlist")
+    save_jsonlist(aligned_data_test, f"{inputFolder}/test.jsonlist")
 
-    save_json([d['id'] for d in aligned_data_train], "./aligned/train.ids.json")
-    save_json([d['id'] for d in aligned_data_test], "./aligned/test.ids.json")
+    save_json([d['id'] for d in aligned_data_train], f"{inputFolder}/train.ids.json")
+    save_json([d['id'] for d in aligned_data_test], f"{inputFolder}/test.ids.json")

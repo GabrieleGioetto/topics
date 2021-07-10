@@ -10,7 +10,7 @@ import glob
 import numpy as np
 
 
-def saveData(data, i):
+def saveData(data, outputFolder):
     df = pd.DataFrame(data=data, columns=['sentences'])
 
     # print(df)
@@ -24,10 +24,10 @@ def saveData(data, i):
 
     # save the data
 
-    if os.path.isdir(f"intermediate{i}") == False:
-        os.mkdir(f"intermediate{i}")
+    if os.path.isdir(f"{outputFolder}") == False:
+        os.mkdir(f"{outputFolder}")
 
-    result.to_csv(f"intermediate{i}/result.txt", header=None, index=None, sep=' ', mode='a')
+    result.to_csv(f"{outputFolder}/result.txt", header=None, index=None, sep=' ', mode='a')
 
 
 if __name__ == "__main__":
@@ -74,9 +74,14 @@ if __name__ == "__main__":
     # Read data
     print('reading data...')
 
-    path = glob.glob('./data/*')
-    data = giant_list(path)
-    saveData(data, int(i/step_save) + 1)
+    inputFolder = "./dataProva"
+    # outputFolder = f"intermediate{int(i/step_save) + 1}"
+    outputFolder = f"intermediateProva"
 
-    with open(f"intermediate{int(i/step_save) + 1}/vocab_dict.json", "w") as outfile:
+    path = glob.glob(f'{inputFolder}/*')
+    data = giant_list(path)
+    # saveData(data, int(i/step_save) + 1)
+    saveData(data, outputFolder)
+
+    with open(f"{outputFolder}/vocab_dict.json", "w") as outfile:
         json.dump(vocab, outfile, ensure_ascii=False)

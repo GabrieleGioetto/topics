@@ -32,4 +32,3 @@ if __name__ == "__main__":
 
     with open("intermediate/vocab_dict.json", "w") as outfile:
         json.dump(vocab, outfile, ensure_ascii=False)
-

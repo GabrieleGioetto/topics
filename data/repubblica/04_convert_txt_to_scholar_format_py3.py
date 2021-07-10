@@ -2,7 +2,7 @@
 from pathlib import Path
 import json
 from sklearn.model_selection import train_test_split
-
+import os
 
 from scipy import sparse
 import numpy as np
@@ -13,8 +13,12 @@ if __name__ == "__main__":
     outdir = Path("aligned")
     outdir.mkdir(exist_ok=True)
 
+    # inputFolder = "intermediate1"
+    inputFolder = "intermediateProva"
+    outputFolder = "alignedProva"
+
     # data files
-    result = np.loadtxt("intermediate1/result.txt")
+    result = np.loadtxt(f"{inputFolder}/result.txt")
 
     print("LOADED")
 
@@ -22,18 +26,22 @@ if __name__ == "__main__":
 
     print("CREATED TRAIN AND TEST")
 
-    np.savetxt('intermediate1/train.txt', train, delimiter=' ')
+    np.savetxt(f'{inputFolder}/train.txt', train, delimiter=' ')
     print("SAVED TRAIN")
 
-    np.savetxt('intermediate1/test.txt', test, delimiter=' ')
+    np.savetxt(f'{inputFolder}/test.txt', test, delimiter=' ')
     print("SAVED TEST")
     
 
     train = sparse.coo_matrix(train)
     test = sparse.coo_matrix(test)
 
-    save_sparse(train, "aligned/train")
-    save_sparse(test,"aligned/test")
+    if os.path.isdir(f"{outputFolder}") == False:
+        os.mkdir(f"{outputFolder}")
+
+
+    save_sparse(train, f"{outputFolder}/train")
+    save_sparse(test, f"{outputFolder}/test")
 
     print("SAVED SPARSE")
 

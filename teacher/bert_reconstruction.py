@@ -205,6 +205,8 @@ def train(args, train_dataset, model, tokenizer, eval_dataset=None):
         for step, batch in enumerate(epoch_iterator):
             model.train()
 
+            print("Step 1")
+
             # Batch spostati su device ( gpu o cpu dipende da argomento)
             input_ids, attention_mask, word_counts = [
                 b.to(args.device) for b in batch]
@@ -223,6 +225,9 @@ def train(args, train_dataset, model, tokenizer, eval_dataset=None):
 
             tr_loss += loss.item()
 
+            print(f"step: {step + 1}")
+            print(f"gradient_accumulation_steps: {args.gradient_accumulation_steps}")
+
             # ogni tot step ( tot = args.gradient_accumulation_steps )
             if (step + 1) % args.gradient_accumulation_steps == 0:
                 torch.nn.utils.clip_grad_norm_(
@@ -232,6 +237,9 @@ def train(args, train_dataset, model, tokenizer, eval_dataset=None):
                 scheduler.step()  # update learning rate schedule
                 model.zero_grad()
                 global_step += 1
+
+                print("Step 2")
+
 
                 if args.logging_steps > 0 and global_step % args.logging_steps == 0:
                     logs = {}
@@ -355,6 +363,7 @@ def evaluate(
 
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -623,7 +632,9 @@ if __name__ == "__main__":
             args.bert_model,
             num_labels=word_counts.shape[1],
             output_hidden_states=True
-        )
+        )   
+
+        print(f"Train dataset shape: {len(train_dataset)}")
 
         checkpoint_dirs = list(Path(args.output_dir).glob(
             args.checkpoint_folder_pattern))
