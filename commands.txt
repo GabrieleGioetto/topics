@@ -68,3 +68,20 @@ python teacher/bert_reconstruction.py --output_dir ./data/repubblica/alignedProv
 
 # 5
 python scholar/scholar_get_topics_representation.py ./data/repubblica/alignedProva/dev --dev_metric npmi -k 50 --epochs 50 --patience 500 --batch_size 2 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/repubblica/alignedProva/dev/logits/checkpoint-4/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/repubblicaProva
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+Italian LASTAMPA
+
+
+# 3
+python teacher/bert_reconstruction.py --input_dir ./data/lastampa/aligned --output_dir ./data/lastampa/aligned/logits --do_train --logging_steps 200 --save_steps 2 --num_train_epochs 4 --seed 42 --num_workers 4 --batch_size 10  --gradient_accumulation_steps 1 --bert_model dbmdz/bert-base-italian-cased --no_dev
+
+
+# 4
+python teacher/bert_reconstruction.py --output_dir ./data/lastampa/aligned/logits --seed 42 --num_workers 6 --get_reps --save_doc_logits --no_dev --checkpoint_folder_pattern "checkpoint-8"
+
+
+# 5
+python scholar/scholar_get_topics_representation.py ./data/lastampa/aligned --dev_metric npmi -k 50 --epochs 50 --patience 500 --batch_size 2 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/lastampa/aligned/logits/checkpoint-8/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/lastampa
