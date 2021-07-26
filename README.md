@@ -1,4 +1,12 @@
-# Improving Neural Topic Models using Knowledge Distillation
+# Neural Topic Models using Knowledge Distillation on Italian dataset
+
+Extension of the work done by Hoyle, Alexander Miserlis and Goel, Pranav and Resnik, Philip for an university project.
+We adopted their model and used it on an Italian dataset, to see further explanations read the report of the project
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
 
 Repo for our [EMNLP 2020 paper](https://www.aclweb.org/anthology/2020.emnlp-main.137/). We will clean up the implementation for improved ease-of-use, but provide the code included in our original submission for the time being. 
 
@@ -25,75 +33,14 @@ If you use this code, please use the following citation:
     `conda env create -f teacher/teacher.yml`
     (edit the first line in the `yml` file if you want to change the name of the resulting environment; the default is `transformers28`).
 
-2. We use the data processing pipeline from [Scholar](https://github.com/dallascard/scholar). We'll use the IMDb data to serve as a guide (preprocessing scripts for the Wikitext and 20ng data are also included for replication purposes, but the processing scripts aren't general-purpose):
 
-```
-conda activate scholar
-python data/imdb/download_imdb.py
+2
+python teacher/bert_reconstruction.py --input_dir ./data/repubblica/aligned/dev --output_dir ./data/repubblica/aligned/dev/logits --do_train --logging_steps 200 --save_steps 50 --num_train_epochs 4 --seed 42 --num_workers 4 --batch_size 10  --gradient_accumulation_steps 8 --bert_model dbmdz/bert-base-italian-cased
 
-# main preprocessing script
-python preprocess_data.py data/imdb/train.jsonlist data/imdb/processed --vocab_size 5000 --test data/imdb/test.jsonlist
-# create a dev split from the train data--change filenames if using different data
-create_dev_split.py
-```
 
-3. Run the teacher model, below is an example using IMDb.
-```
-conda activate transformers28
+3
+python teacher/bert_reconstruction.py --output_dir ./data/repubblica/aligned/dev/logits --seed 42 --num_workers 6 --get_reps --save_doc_logits --no_dev --checkpoint_folder_pattern "checkpoint-600"
 
-python teacher/bert_reconstruction.py \
-    --input-dir ./data/imdb/processed-dev \
-    --output-dir ./data/imdb/processed-dev/logits \ 
-    --do-train \
-    --evaluate-during-training \
-    --truncate-dev-set-for-eval 120 \
-    --logging-steps 200 \
-    --save-steps 1000 \
-    --num-train-epochs 6 \
-    --seed 42 \
-    --num-workers 4 \
-    --batch-size 20 \
-    --gradient-accumulation-steps 8 \
-    --document-split-pooling mean-over-logits
-```
-
-4. Collect the logits from the teacher model (the `--checkpoint-folder-pattern` argument accepts grub pattern matching in case you want to create logits for different stages of training; be sure to enclose in double quotes `"`)
-```
-conda activate transformers28
-
-python teacher/bert_reconstruction.py \
-    --output-dir ./data/imdb/processed-dev/logits \
-    --seed 42 \
-    --num-workers 6 \
-    --get-reps \
-    --checkpoint-folder-pattern "checkpoint-9000" \
-    --save-doc-logits \
-    --no-dev
-```
-
-5. Run the topic model (there are a number of extraneous experimental arguments in `run_scholar.py`, which we intend to strip out in a future version).
-```
-conda activate scholar
-
-python scholar/run_scholar.py \
-    ./data/imdb/processed-dev \
-    --dev-metric npmi \
-    -k 50 \
-    --epochs 500 \
-    --patience 500 \
-    --batch-size 200 \
-    --background-embeddings \
-    --device 0 \
-    --dev-prefix dev \
-    -lr 0.002 \
-    --alpha 0.5 \
-    --eta-bn-anneal-step-const 0.25 \
-    --doc-reps-dir ./data/imdb/processed-dev/logits/checkpoint-9000/doc_logits \
-    --use-doc-layer \
-    --no-bow-reconstruction-loss \
-    --doc-reconstruction-weight 0.5 \
-    --doc-reconstruction-temp 1.0 \
-    --doc-reconstruction-logit-clipping 10.0 \
-    -o ./outputs/imdb
-```
+4
+python scholar/run_scholar.py ./data/repubblica/aligned/dev --dev_metric npmi -k 50 --epochs 500 --patience 500 --batch_size 200 --background_embeddings --device 0 --dev_prefix dev -l 0.002 --alpha 0.5 --eta_bn_anneal_step_const 0.25 --doc_reps_dir ./data/repubblica/aligned/dev/logits/checkpoint-600/doc_logits --use_doc_layer --no_bow_reconstruction_loss --doc_reconstruction_weight 0.5 --doc_reconstruction_temp 1.0 --doc_reconstruction_logit_clipping 10.0 -o ./outputs/repubblica
 
