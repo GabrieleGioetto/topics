@@ -1,7 +1,7 @@
 # Neural Topic Models using Knowledge Distillation on Italian dataset
 
 Extension of the work done by Hoyle, Alexander Miserlis and Goel, Pranav and Resnik, Philip for an university project.
-We adopted their model and used it on an Italian dataset, to see further explanations read the report of the project
+We adopted their model and used it on an Italian dataset, to see further explanations read the report of the project ( Buffa_Germinario_Gioetto.pdf )
 
 
 
